@@ -24,33 +24,54 @@ CVV=999
 AMOUNT=9.95
 
 ###############################################################################
-# Sale Transactions
+# Sale
 ###############################################################################
 TESTCASE=sale
 if [ -v $1 ] || [ $1 == "all" ] || [ $1 == $TESTCASE ] ; then
-	RESPONSE=`curl -d "mkey=$MKEY&transtype=sale&amount=$AMOUNT&cardnum=$CARDNUM&cardexp=$CARDEXP&cvv=$CVV" \
+	RESPONSE=`curl -d "mkey=$MKEY&"\
+"transtype=sale&"\
+"amount=$AMOUNT&"\
+"cardnum=$CARDNUM&"\
+"cardexp=$CARDEXP&cvv=$CVV" \
 		https://secure.sparrowone.com/Payments/Services_api.aspx`
 	checkResponse
 fi
 
 TESTCASE=sale-decline
 if [ -v $1 ] || [ $1 == "all" ] || [ $1 == $TESTCASE ] ; then
-	RESPONSE=`curl -d "mkey=$MKEY&transtype=sale&amount=0.01&cardnum=$CARDNUM&cardexp=$CARDEXP&cvv=$CVV" \
+	RESPONSE=`curl -d "mkey=$MKEY&"\
+"transtype=sale&"\
+"amount=0.01&"\
+"cardnum=$CARDNUM&"\
+"cardexp=$CARDEXP&cvv=$CVV" \
 		https://secure.sparrowone.com/Payments/Services_api.aspx`
 	checkResponse
 fi
 
 TESTCASE=sale-invalid-card
 if [ -v $1 ] || [ $1 == "all" ] || [ $1 == $TESTCASE ] ; then
-	RESPONSE=`curl -d "mkey=$MKEY&transtype=sale&amount=0.01&cardnum=1234567887654321&cardexp=$CARDEXP&cvv=$CVV" \
+	RESPONSE=`curl -d "mkey=$MKEY&"\
+"transtype=sale&"\
+"amount=$AMOUNT&"\
+"cardnum=1234567887654321&"\
+"cardexp=$CARDEXP&cvv=$CVV" \
 		https://secure.sparrowone.com/Payments/Services_api.aspx`
 	checkResponse
 fi
 
 TESTCASE=sale-avs-mismatch
 if [ -v $1 ] || [ $1 == "all" ] || [ $1 == $TESTCASE ] ; then
-	RESPONSE=`curl -d "mkey=$MKEY&transtype=sale&amount=$AMOUNT&cardnum=$CARDNUM&cardexp=$CARDEXP&cvv=$CVV&"\
-"address1=888&zip=77777" \
+	RESPONSE=`curl -d "mkey=$MKEY&"\
+"transtype=sale&"\
+"amount=$AMOUNT"\
+"&cardnum=$CARDNUM"\
+"&cardexp=$CARDEXP&cvv=$CVV&"\
+"address1=888&"\
+"zip=77777" \
 		https://secure.sparrowone.com/Payments/Services_api.aspx`
 	checkResponse
 fi
+
+###############################################################################
+# Authorization
+###############################################################################
