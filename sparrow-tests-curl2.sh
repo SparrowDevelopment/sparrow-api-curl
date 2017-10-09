@@ -1273,19 +1273,28 @@ fi
 
 ################################################################################
 # Creating an Invoice
+#todo:response=3&textresponse=Value+true+does+not+match+the+required+format+of+payment+field+sendpaymentlinkemail&errorcode=
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "creating_an_invoice" ] ; then
   echo Creating an Invoice
   response=`curl -s -d \
 "mkey=$M_KEY&"\
-"transtype=&"\
+"transtype=createmerchantinvoice&"\
 "customertoken=CustomerToken&"\
-"invoicedate=&"\
+"invoicedate=10%2f09%2f2017&"\
 "currency=USD&"\
-"invoicestatus=&"\
-"invoicesource=&"\
-"invoiceamount=&"\
-"sendpaymentlinkemail="\
+"invoicestatus=active&"\
+"invoicesource=DataVault&"\
+"invoiceamount=10.00&"\
+"invoiceitemsku_1=123&"\
+"invoiceitemdescription_1=Widget+1&"\
+"invoiceitemprice_1=2.00&"\
+"invoiceitemquantity_1=1&"\
+"invoiceitemsku_2=456&"\
+"invoiceitemdescription_2=Widget+2&"\
+"invoiceitemprice_2=4.00&"\
+"invoiceitemquantity_2=2&"\
+"sendpaymentlinkemail=true"\
     $url`
     checkResponse "textresponse=SUCCESS"
 fi
