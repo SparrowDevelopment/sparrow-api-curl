@@ -30,7 +30,11 @@ echo passenger_sale
 echo simple_star_card
 echo advanced_star_card
 echo simple_ach
+echo simple_ach_refund
+echo simple_ach_credit
 echo advanced_ach
+echo advanced_ach_refund
+echo advanced_ach_credit
 echo e_wallet_simple_credit
 echo fiserv_simple_sale
 echo advanced_fiserv_sale
@@ -48,7 +52,6 @@ echo delete_payment_type
 echo delete_data_vault_customer
 echo creating_a_payment_plan
 echo updating_a_payment_plan
-echo notification_settings
 echo deleting_a_plan
 echo assigning_a_payment_plan_to_a_customer
 echo update_payment_plan_assignment
@@ -530,11 +533,50 @@ fi
 
 ################################################################################
 # Simple ACH
+#todo:I am getting an error that cardnum is required.
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_ach" ] ; then
   echo Simple ACH
   response=`curl -s -d \
-"transtype=sale%2f+refund%2f+credit&"\
+"transtype=sale&"\
+"mkey=$M_KEY&"\
+"bankname=&"\
+"routing=0000000&"\
+"account=1111111&"\
+"achaccounttype=checking&"\
+"achaccountsubtype=personal&"\
+"amount=$amount"\
+    $url`
+    checkResponse "textresponse=SUCCESS"
+fi
+
+################################################################################
+# Simple ACH Refund
+#todo:I am getting an error that transid is required.
+################################################################################
+if [ "$1" == "all" ] || [ "$1" == "simple_ach_refund" ] ; then
+  echo Simple ACH Refund
+  response=`curl -s -d \
+"transtype=refund&"\
+"mkey=$M_KEY&"\
+"bankname=&"\
+"routing=0000000&"\
+"account=1111111&"\
+"achaccounttype=checking&"\
+"achaccountsubtype=personal&"\
+"amount=$amount"\
+    $url`
+    checkResponse "textresponse=SUCCESS"
+fi
+
+################################################################################
+# Simple ACH Credit
+#todo:Getting and error that cardnum is missing.
+################################################################################
+if [ "$1" == "all" ] || [ "$1" == "simple_ach_credit" ] ; then
+  echo Simple ACH Credit
+  response=`curl -s -d \
+"transtype=credit&"\
 "mkey=$M_KEY&"\
 "bankname=&"\
 "routing=0000000&"\
@@ -548,11 +590,12 @@ fi
 
 ################################################################################
 # Advanced ACH
+#todo:Getting error that cardnum is required.
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "advanced_ach" ] ; then
   echo Advanced ACH
   response=`curl -s -d \
-"transtype=sale%2f+refund%2f+credit&"\
+"transtype=sale&"\
 "mkey=$M_KEY&"\
 "bankname=&"\
 "routing=0000000&"\
@@ -599,7 +642,111 @@ if [ "$1" == "all" ] || [ "$1" == "advanced_ach" ] ; then
 fi
 
 ################################################################################
+# Advanced ACH Refund
+#todo:Getting an error that transid is required.
+################################################################################
+if [ "$1" == "all" ] || [ "$1" == "advanced_ach_refund" ] ; then
+  echo Advanced ACH Refund
+  response=`curl -s -d \
+"transtype=refund&"\
+"mkey=$M_KEY&"\
+"bankname=&"\
+"routing=0000000&"\
+"account=1111111&"\
+"achaccounttype=checking&"\
+"achaccountsubtype=personal&"\
+"amount=$amount&"\
+"orderdesc=Order+Description&"\
+"orderid=11111&"\
+"firstname=John&"\
+"lastname=Doe&"\
+"company=Sparrow+One&"\
+"address1=16100+N+71st+Street&"\
+"address2=Suite+170&"\
+"city=Scottsdale&"\
+"state=AZ&"\
+"zip=85254&"\
+"country=US&"\
+"phone=7025551234&"\
+"email=john%40norepy.com&"\
+"shipaddress1=16100+N+72nd+Street&"\
+"shipaddress2=Suite+171&"\
+"shipcity=Pheonix&"\
+"shipstate=AZ&"\
+"shipzip=85004&"\
+"shipcountry=US&"\
+"shipphone=6025551234&"\
+"shipemail=jane%40noreply.com&"\
+"saveclient=true&"\
+"updateclient=true&"\
+"opt_amount_type_1=surcharge&"\
+"opt_amount_value_1=1.01&"\
+"opt_amount_percentage_1=18&"\
+"birthdate=01%2f31%2f2000&"\
+"checknumber=123&"\
+"driverlicensenumber=1234567890&"\
+"driverlicensecountry=US&"\
+"driverlicensestate=AZ&"\
+"sendtransreceipttobillemail=true&"\
+"sendtransreceipttoshipemail=true&"\
+"paymentdescriptor=Custom+Payment+Descriptor"\
+    $url`
+    checkResponse "textresponse=SUCCESS"
+fi
+
+################################################################################
+# Advanced ACH Credit
+#todo:required payment filed cardnum is missing.
+################################################################################
+if [ "$1" == "all" ] || [ "$1" == "advanced_ach_credit" ] ; then
+  echo Advanced ACH Credit
+  response=`curl -s -d \
+"transtype=credit&"\
+"mkey=$M_KEY&"\
+"bankname=&"\
+"routing=0000000&"\
+"account=1111111&"\
+"achaccounttype=checking&"\
+"achaccountsubtype=personal&"\
+"amount=$amount&"\
+"orderdesc=Order+Description&"\
+"orderid=11111&"\
+"firstname=John&"\
+"lastname=Doe&"\
+"company=Sparrow+One&"\
+"address1=16100+N+71st+Street&"\
+"address2=Suite+170&"\
+"city=Scottsdale&"\
+"state=AZ&"\
+"zip=85254&"\
+"country=US&"\
+"phone=7025551234&"\
+"email=john%40norepy.com&"\
+"shipaddress1=16100+N+72nd+Street&"\
+"shipaddress2=Suite+171&"\
+"shipcity=Pheonix&"\
+"shipstate=AZ&"\
+"shipzip=85004&"\
+"shipcountry=US&"\
+"shipphone=6025551234&"\
+"shipemail=jane%40noreply.com&"\
+"saveclient=true&"\
+"updateclient=true&"\
+"birthdate=01%2f31%2f2000&"\
+"checknumber=123&"\
+"driverlicensenumber=1234567890&"\
+"driverlicensecountry=US&"\
+"driverlicensestate=AZ&"\
+"sendtransreceipttobillemail=true&"\
+"sendtransreceipttoshipemail=true&"\
+"paymentdescriptor=Custom+Payment+Descriptor"\
+    $url`
+    checkResponse "textresponse=SUCCESS"
+fi
+
+################################################################################
 # eWallet Simple Credit
+#todo:required payment field cardnum is missing.
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "ewallet_simple_credit" ] ; then
   echo eWallet Simple Credit
@@ -703,11 +850,12 @@ trans_id=$(grep -oP '(?<=transid=)\d+?(?=&)' <<< $response)
 "transid=$trans_id&"\
 "reason=Reason+for+chargeback"\
     $url`
-    checkResponse "textresponse=SUCCESS"
+    checkResponse "textresponse=Reason+for+chargeback"
 fi
 
 ################################################################################
 # Retrieve Card Balance
+#todo:Invalid operation
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "retrieve_card_balance" ] ; then
   echo Retrieve Card Balance
@@ -753,6 +901,7 @@ fi
 
 ################################################################################
 # Adding a Customer
+#todo:response=3&textresponse=Required+payment+field+bankname_2+is+missing&type=addcustomer, How many accounts are required?
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "adding_a_customer" ] ; then
   echo Adding a Customer
@@ -796,12 +945,12 @@ if [ "$1" == "all" ] || [ "$1" == "adding_a_customer" ] ; then
 "email_1=john%40norepy.com&"\
 "cardnum_1=4111111111111111&"\
 "cardexp_1=1019&"\
-"bankname_1=&"\
-"routing_1=&"\
-"account_1=&"\
-"achaccounttype_1=&"\
+"bankname_1=My+Bank&"\
+"routing_1=123456789&"\
+"account_1=123456789&"\
+"achaccounttype_1=checking&"\
 "payno_1=1&"\
-"ewalletaccount_1=&"\
+"ewalletaccount_1=joe%40example.com&"\
 "paytype_2=check&"\
 "firstname_2=John&"\
 "lastname_2=Doe&"\
@@ -823,6 +972,7 @@ fi
 
 ################################################################################
 # Add Customer Credit Card Simple
+#todo:response=3&textresponse=Required+payment+field+paytype_1+is+missing&type=addcustomer
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "add_customer_credit_card_simple" ] ; then
   echo Add Customer Credit Card Simple
@@ -851,16 +1001,14 @@ if [ "$1" == "all" ] || [ "$1" == "add_customer_ach_simple" ] ; then
 "transtype=addcustomer&"\
 "token=&"\
 "firstname=John&"\
-"lastname=Doe&"\
-"bankname_1=&"\
-"routing_1=&"\
-"account_1="\
+"lastname=Doe"\
     $url`
-    checkResponse "textresponse=SUCCESS"
+    checkResponse "textresponse=Customer+with+token+*+successfully+created"
 fi
 
 ################################################################################
 # Add Customer Star Simple
+#todo:response=3&textresponse=Required+payment+field+paytype_1+is+missing&type=addcustomer
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "add_customer_star_simple" ] ; then
   echo Add Customer Star Simple
@@ -887,21 +1035,32 @@ if [ "$1" == "all" ] || [ "$1" == "add_customer_ewallet_simple" ] ; then
 "transtype=addcustomer&"\
 "token=&"\
 "firstname=John&"\
-"lastname=Doe&"\
-"ewalletaccount_1="\
+"lastname=Doe"\
     $url`
-    checkResponse "textresponse=SUCCESS"
+    checkResponse "=Customer+with+token+*+successfully+created"
 fi
 
 ################################################################################
 # Update Payment Type
+#todo:The heading on this one in the docs seems like it should be Update Customer
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "update_payment_type" ] ; then
   echo Update Payment Type
   response=`curl -s -d \
+"VARIABLE NAME=&"\
+"mkey=$M_KEY&"\
+"transtype=addcustomer&"\
+"token=&"\
+"firstname=John&"\
+"lastname=Doe"\
+    $url`
+
+token=$(grep -oP '(?<=customertoken=).+' <<< $response)
+
+  response=`curl -s -d \
 "mkey=$M_KEY&"\
 "transtype=updatecustomer&"\
-"token=&"\
+"token=$token&"\
 "firstname=John&"\
 "lastname=Doe&"\
 "address1=16100+N+71st+Street&"\
@@ -926,19 +1085,31 @@ if [ "$1" == "all" ] || [ "$1" == "update_payment_type" ] ; then
 "password=Password123&"\
 "clientuseremail=john%40norepy.com"\
     $url`
-    checkResponse "textresponse=SUCCESS"
+    checkResponse "&textresponse=Customer+with+token+*+successfully+updated"
 fi
 
 ################################################################################
 # Delete Payment Type
+#todo:response=3&textresponse=Required+payment+field+token+is+missing&type=updatecustomer, I'm assuming that this should have a token=, but this isn't indicated in the docs.
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "delete_payment_type" ] ; then
   echo Delete Payment Type
   response=`curl -s -d \
+"VARIABLE NAME=&"\
+"mkey=$M_KEY&"\
+"transtype=addcustomer&"\
+"token=&"\
+"firstname=John&"\
+"lastname=Doe"\
+    $url`
+
+token=$(grep -oP '(?<=customertoken=).+' <<< $response)
+
+  response=`curl -s -d \
 "mkey=$M_KEY&"\
 "transtype=updatecustomer&"\
-"token_1=&"\
-"operationtype_1="\
+"token_1=$token&"\
+"operationtype_1=deletepaymenttype"\
     $url`
     checkResponse "textresponse=SUCCESS"
 fi
@@ -949,21 +1120,33 @@ fi
 if [ "$1" == "all" ] || [ "$1" == "delete_data_vault_customer" ] ; then
   echo Delete Data Vault Customer
   response=`curl -s -d \
+"VARIABLE NAME=&"\
+"mkey=$M_KEY&"\
+"transtype=addcustomer&"\
+"token=&"\
+"firstname=John&"\
+"lastname=Doe"\
+    $url`
+
+token=$(grep -oP '(?<=customertoken=).+' <<< $response)
+
+  response=`curl -s -d \
 "mkey=$M_KEY&"\
 "transtype=deletecustomer&"\
-"token="\
+"token=$token"\
     $url`
     checkResponse "textresponse=SUCCESS"
 fi
 
 ################################################################################
 # Creating a Payment Plan
+#todo:response=3&textresponse=The+defaultachmkey+field+is+not+valid.&type=addplan
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "creating_a_payment_plan" ] ; then
   echo Creating a Payment Plan
   response=`curl -s -d \
 "mkey=$M_KEY&"\
-"transtype=&"\
+"transtype=addplan&"\
 "planname=PaymentPlan1&"\
 "plandesc=1st+Payment+Plan&"\
 "startdate=01%2f31%2f2017&"\
@@ -1002,37 +1185,6 @@ if [ "$1" == "all" ] || [ "$1" == "updating_a_payment_plan" ] ; then
 "retryfirstdayofmonth=&"\
 "retryseconddayofmonth=&"\
 "autocreateclientaccounts=true"\
-    $url`
-    checkResponse "textresponse=SUCCESS"
-fi
-
-################################################################################
-# Notification Settings
-################################################################################
-if [ "$1" == "all" ] || [ "$1" == "notification_settings" ] ; then
-  echo Notification Settings
-  response=`curl -s -d \
-"reviewonassignment=&"\
-"processimmediately=&"\
-"overridesender=&"\
-"senderemail=&"\
-"notifyupcomingpayment=&"\
-"notifydaysbeforeupcomingpayment=&"\
-"notifyplansummary=&"\
-"notifyplansummaryinterval=&"\
-"notifyplansummaryemails=&"\
-"notifydailystats=&"\
-"notifydailystatsemails=&"\
-"notifyplancomplete=&"\
-"notifyplancompleteemails=&"\
-"notifydecline=&"\
-"notifydeclineemails=&"\
-"notifyviaftp=&"\
-"notifyviaftpurl=&"\
-"notifyviaftpusername=&"\
-"notifyviaftppassword=&"\
-"notifyflagged=&"\
-"notifyflaggedemails="\
     $url`
     checkResponse "textresponse=SUCCESS"
 fi
@@ -1133,10 +1285,6 @@ if [ "$1" == "all" ] || [ "$1" == "creating_an_invoice" ] ; then
 "invoicestatus=&"\
 "invoicesource=&"\
 "invoiceamount=&"\
-"invoiceitemsku_1=&"\
-"invoiceitemdescription_1=&"\
-"invoiceitemprice_1=&"\
-"invoiceitemquantity_1=&"\
 "sendpaymentlinkemail="\
     $url`
     checkResponse "textresponse=SUCCESS"
@@ -1157,10 +1305,6 @@ if [ "$1" == "all" ] || [ "$1" == "update_invoice" ] ; then
 "invoicestatus=&"\
 "invoicesource=&"\
 "invoiceamount=&"\
-"invoiceitemsku_1=&"\
-"invoiceitemdescription_1=&"\
-"invoiceitemprice_1=&"\
-"invoiceitemquantity_1=&"\
 "sendpaymentlinkemail="\
     $url`
     checkResponse "textresponse=SUCCESS"
