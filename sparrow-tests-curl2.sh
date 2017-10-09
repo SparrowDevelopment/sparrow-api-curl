@@ -66,9 +66,9 @@ error=0
 checkResponse()
 {
 	if [[ $response == *$1* ]]; then
-		echo Success
+		echo Pass
 	else
-		echo Error
+		echo Fail
 		error=1
 	fi
 	echo $response;
@@ -119,12 +119,12 @@ if [ "$1" == "all" ] || [ "$1" == "simple_sale_invalid_card" ] ; then
   response=`curl -s -d \
 "transtype=sale&"\
 "mkey=$M_KEY&"\
-"cardnum=$card_num&"\
+"cardnum=1234567890123456&"\
 "cardexp=$card_exp&"\
-"amount=0.01&"\
+"amount=$amount&"\
 "cvv=$cvv"\
     $url`
-    checkResponse "textresponse=Invalid Credit Card Number"
+    checkResponse "textresponse=Invalid+Credit+Card+Number"
 fi
 
 ################################################################################
@@ -296,6 +296,7 @@ fi
 
 ################################################################################
 # Simple Offline Capture
+#todo:I don't know if this is going to be possible to write a test case for.  Is there a test verbal auth code I can use?
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_offline_capture" ] ; then
   echo Simple Offline Capture
@@ -339,6 +340,7 @@ fi
 
 ################################################################################
 # Advanced Refund
+#todo:If I include opt_amoutextresponse=Transaction+Void+Successfult_type_# and opt_amount_value_# in the sale, then I this test case will pass, but they are not documented as part in Advanced Sale
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "advanced_refund" ] ; then
   echo Advanced Refund
@@ -389,11 +391,12 @@ trans_id=$(grep -oP '(?<=transid=)\d+?(?=&)' <<< $response)
 "transid=$trans_id&"\
 "amount=$amount"\
     $url`
-    checkResponse "textresponse=SUCCESS"
+    checkResponse "textresponse=Transaction+Void+Successful"
 fi
 
 ################################################################################
 # Advanced Void
+#todo:If I include opt_amoutextresponse=Transaction+Void+Successfult_type_# and opt_amount_value_# in the sale, then I this test case will pass, but they are not documented as part in Advanced Sale
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "advanced_void" ] ; then
   echo Advanced Void
@@ -419,7 +422,7 @@ trans_id=$(grep -oP '(?<=transid=)\d+?(?=&)' <<< $response)
 "sendtransreceipttoshipemail=true&"\
 "sendtransreceipttoemails=email%40email.com"\
     $url`
-    checkResponse "textresponse=SUCCESS"
+    checkResponse "textresponse=Transaction+Void+Successful"
 fi
 
 ################################################################################
@@ -435,9 +438,11 @@ if [ "$1" == "all" ] || [ "$1" == "passenger_sale" ] ; then
 "amount=$amount&"\
 "cvv=$cvv&"\
 "passengername=John+Doe&"\
-"stopovercode1 stopovercode2 stopovercode3 stopovercode4 etc=IAD%3bCPH&"\
-"airportcode1=LAS%3bCDG&"\
-"airportcode2 airportcode3 airportcode4=&"\
+"stopovercode1=O&"\
+"airportcode1=LAS&"\
+"airportcode2=CDG&"\
+"airportcode3=IAD&"\
+"airportcode4=CPH&"\
 "carriercoupon1 carriercoupon2 carriercoupon3 carriercoupon4=AA%3bBB&"\
 "airlinecodenumber=AA0&"\
 "ticketnumber=1234567890&"\
@@ -457,6 +462,7 @@ fi
 
 ################################################################################
 # Simple Star Card
+#todo:The fields documented are incomplete.  Can I assume that they should be the same as Advanced Sale?
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_star_card" ] ; then
   echo Simple Star Card
