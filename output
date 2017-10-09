@@ -1,0 +1,141 @@
+Simple Sale
+Success
+response=1&textresponse=SUCCESS&transid=10690587&xref=3819039288&authcode=123456&orderid=&type=sale&avsresponse=&cvvresponse=M&coderesponse=100&codedescription=Transaction+was+Approved&status=200
+Simple Sale Decline
+Success
+response=2&textresponse=DECLINE&transid=10690588&xref=3819039408&authcode=&orderid=&type=sale&avsresponse=&cvvresponse=M&coderesponse=200&codedescription=Transaction+was+Declined+by+Processor&status=400
+Simple Sale Invalid Card
+Error
+response=2&textresponse=DECLINE&transid=10690589&xref=3819039462&authcode=&orderid=&type=sale&avsresponse=&cvvresponse=M&coderesponse=200&codedescription=Transaction+was+Declined+by+Processor&status=400
+Simple Sale AVS mismatch
+Success
+response=2&textresponse=DECLINE&transid=10690590&xref=3819039545&authcode=&orderid=&type=sale&avsresponse=Y&cvvresponse=M&coderesponse=200&codedescription=Transaction+was+Declined+by+Processor&status=400
+Advanced Sale
+Success
+response=1&textresponse=SUCCESS&transid=10690591&xref=3819039601&authcode=123456&orderid=11111&type=sale&avsresponse=N&cvvresponse=M&coderesponse=100&codedescription=Transaction+was+Approved&status=200
+Simple Authorization
+Success
+response=1&textresponse=SUCCESS&transid=10690592&xref=3819039642&authcode=123456&orderid=&type=auth&avsresponse=&cvvresponse=M&coderesponse=100&codedescription=Transaction+was+Approved&status=200
+Advanced Auth
+Success
+response=1&textresponse=SUCCESS&transid=10690593&xref=3819039674&authcode=123456&orderid=11111&type=auth&avsresponse=N&cvvresponse=M&coderesponse=100&codedescription=Transaction+was+Approved&status=200
+Simple Capture
+Success
+response=1&textresponse=SUCCESS&transid=10690594&xref=3819039722&authcode=123456&orderid=&type=capture&avsresponse=&cvvresponse=M&coderesponse=100&codedescription=Transaction+was+Approved&status=200
+Simple Offline Capture
+Error
+response=3&textresponse=Payment+operation+is+disabled+for+current+merchant+account&transid=10690595&xref=&authcode=&orderid=&type=offline&avsresponse=&cvvresponse=&coderesponse=&codedescription=&status=500
+Simple Refund
+Success
+response=1&textresponse=SUCCESS&transid=10690596&xref=3819039827&authcode=123456&orderid=&type=refund&avsresponse=&cvvresponse=M&coderesponse=100&codedescription=Transaction+was+Approved&status=200
+Advanced Refund
+Error
+response=3&textresponse=Surcharge+Amount+cannot+be+set+for+this+transaction.&transid=10690597&xref=3819039905&authcode=123456&orderid=&type=refund&avsresponse=&cvvresponse=M&coderesponse=&codedescription=&status=500
+Simple Void
+Error
+response=1&textresponse=Transaction+Void+Successful&transid=10690598&xref=3819039956&authcode=123456&orderid=&type=void&avsresponse=&cvvresponse=M&coderesponse=100&codedescription=Transaction+was+Approved&status=200
+Advanced Void
+Error
+response=3&textresponse=Additional+amount+for+transaction+type+void+not+allowed&errorcode=
+Passenger Sale
+Error
+response=3&textresponse=Value+LAS%3bCDG+does+not+match+the+required+format+of+payment+field+AirportCode1&type=sale&coderesponse=&codedescription=&status=500
+Simple Star Card
+Error
+response=3&textresponse=Required+payment+field+cardexp+is+missing&errorcode=
+Advanced Star Card
+Success
+response=1&textresponse=SUCCESS&transid=10690601&xref=3819040107&authcode=123456&orderid=11111&type=sale&avsresponse=N&cvvresponse=&coderesponse=100&codedescription=Transaction+was+Approved&status=200
+Simple ACH
+Error
+response=3&textresponse=Invalid+operation+type&errorcode=
+Advanced ACH
+Error
+response=3&textresponse=Invalid+operation+type&errorcode=
+eWallet Simple Credit
+Error
+response=3&textresponse=Required+payment+field+cardnum+is+missing&errorcode=
+Fiserv Simple Sale
+Success
+response=1&textresponse=SUCCESS&transid=10690602&xref=3819040188&authcode=123456&orderid=&type=sale&avsresponse=&cvvresponse=&coderesponse=100&codedescription=Transaction+was+Approved&status=200
+Advanced Fiserv Sale
+Success
+response=1&textresponse=SUCCESS&transid=10690603&xref=3819040242&authcode=123456&orderid=11111&type=sale&avsresponse=N&cvvresponse=M&coderesponse=100&codedescription=Transaction+was+Approved&status=200
+Chargeback Entry
+Error
+response=1&textresponse=Reason+for+chargeback&transid=10690604&xref=3819040290&authcode=123456&orderid=&type=chargeback&avsresponse=&cvvresponse=M&coderesponse=&codedescription=&status=200
+Retrieve Card Balance
+Error
+response=3&textresponse=Invalid+operation+type&errorcode=
+Decrypting Custom Fields
+Error
+response=3&textresponse=Internal+processing+error
+Account Verification
+Success
+response=1&textresponse=SUCCESS&transid=10690605&xref=3819040341&authcode=123456&orderid=&type=auth&avsresponse=N&cvvresponse=M&coderesponse=100&codedescription=Transaction+was+Approved&status=200
+Adding a Customer
+Error
+response=3&textresponse=Required+payment+field+bankname_2+is+missing&type=addcustomer
+Add Customer Credit Card Simple
+Error
+response=3&textresponse=Required+payment+field+paytype_1+is+missing&type=addcustomer
+Add Customer ACH Simple
+Error
+response=3&textresponse=Required+payment+field+paytype_1+is+missing&type=addcustomer
+Add Customer Star Simple
+Error
+response=3&textresponse=Required+payment+field+paytype_1+is+missing&type=addcustomer
+Add Customer eWallet Simple
+Error
+response=3&textresponse=Required+payment+field+paytype_1+is+missing&type=addcustomer
+Update Payment Type
+Error
+response=3&textresponse=Value++does+not+match+the+required+format+of+payment+field+token&type=updatecustomer
+Delete Payment Type
+Error
+response=3&textresponse=Required+payment+field+token+is+missing&type=updatecustomer
+Delete Data Vault Customer
+Error
+response=3&textresponse=Value++does+not+match+the+required+format+of+payment+field+token&type=deletecustomer
+Creating a Payment Plan
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Updating a Payment Plan
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Notification Settings
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Deleting a Plan
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Assigning a Payment Plan to a Customer
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Update Payment Plan Assignment
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Cancel Plan Assignment
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Creating an Invoice
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Update Invoice
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Retrieve Invoice
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Cancel Invoice
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Cancel Invoice by Customer
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Paying an Invoice with a Credit Card
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
+Paying an Invoice with a Bank Account
+Error
+response=3&textresponse=Required+payment+field+transtype+is+missing&errorcode=
