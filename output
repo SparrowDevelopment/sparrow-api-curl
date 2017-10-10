@@ -1,3 +1,3 @@
-Creating an Invoice
+Advanced Void
 Fail
-response=3&textresponse=Value+true+does+not+match+the+required+format+of+payment+field+sendpaymentlinkemail&errorcode=
+response=3&textresponse=Additional+amount+for+transaction+type+void+not+allowed&errorcode=

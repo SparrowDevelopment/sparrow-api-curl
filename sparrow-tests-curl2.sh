@@ -343,7 +343,7 @@ fi
 
 ################################################################################
 # Advanced Refund
-#todo:If I include opt_amoutextresponse=Transaction+Void+Successfult_type_# and opt_amount_value_# in the sale, then I this test case will pass, but they are not documented as part in Advanced Sale
+#todo:If I include opt_amout_# and opt_amount_value_# in the sale, then I this test case will pass, but they are not documented as part in Advanced Sale
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "advanced_refund" ] ; then
   echo Advanced Refund
