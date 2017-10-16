@@ -1,3 +1,13 @@
-Advanced Void
-Fail
-response=3&textresponse=Additional+amount+for+transaction+type+void+not+allowed&errorcode=
+Simple Sale Pass
+Simple Sale Decline Pass
+Simple Sale Invalid Card Pass
+Simple Sale AVS mismatch Pass
+Advanced Sale Pass
+Simple Authorization Pass
+Advanced Auth Pass
+Simple Capture Pass
+Simple Offline Capture Pass
+Simple Refund Pass
+Advanced Refund Pass
+Simple Void Pass
+Advanced Void Pass
