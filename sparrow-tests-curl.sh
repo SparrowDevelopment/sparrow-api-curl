@@ -90,7 +90,7 @@ pass_Count=0
 fail_Count=0
 check_Response()
 {
-    grep -Esq $1 <<< $2
+    grep -Esqi $1 <<< $2
     if [ $? -eq 0 ]; then
         check_Response_Result=Pass
         pass_Count=$((pass_Count + 1))
@@ -110,14 +110,13 @@ url=https://secure.sparrowone.com/Payments/Services_api.aspx
 # Simple Sale
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_sale" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv\"\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=SUCCESS" "$response"
@@ -133,14 +132,13 @@ fi
 # Simple Sale Decline
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_sale_decline" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
+cardnum=4111111111111111&\
+cardexp=1019&\
 amount=0.01&\
-cvv=$cvv\"\
+cvv=999\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=DECLINE" "$response"
@@ -156,14 +154,13 @@ fi
 # Simple Sale Invalid Card
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_sale_invalid_card" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
 cardnum=1234567890123456&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv\"\
+cardexp=1019&\
+amount=9.95&\
+cvv=999\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=Invalid\+Credit\+Card\+Number" "$response"
@@ -179,14 +176,13 @@ fi
 # Simple Sale AVS mismatch
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_sale_avs_mismatch" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
+cardnum=4111111111111111&\
+cardexp=1019&\
 amount=0.01&\
-cvv=$cvv&\
+cvv=999&\
 address1=888&\
 zip=77777\"\
         $url"
@@ -204,14 +200,13 @@ fi
 # Advanced Sale
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "advanced_sale" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv&\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999&\
 currency=USD&\
 firstname=John&\
 lastname=Doe&\
@@ -263,14 +258,13 @@ fi
 # Simple Authorization
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_authorization" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=auth&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv\"\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=SUCCESS" "$response"
@@ -286,14 +280,13 @@ fi
 # Advanced Auth
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "advanced_auth" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=auth&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv&\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999&\
 currency=USD&\
 firstname=John&\
 lastname=Doe&\
@@ -345,31 +338,29 @@ fi
 # Simple Capture
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_capture" ] ; then
-    
-
-command="curl $curl_options -d \"\
+    # Required Setup Transaction Simple Authorization
+    command="curl $curl_options -d \"\
 transtype=auth&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv\"\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999\"\
         $url"
     response=`eval $command`
-
-    transid=$(grep -oP '(?<=transid=).+?(?=&)' <<< $response)
+    transid=$(grep -oP '(?<=transid=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Simple Authorization
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
+    command="curl $curl_options -d \"\
 transtype=capture&\
 mkey=$M_KEY&\
 transid=$transid&\
-cardexp=$card_exp&\
-amount=$amount&\
+cardexp=1019&\
+amount=9.95&\
 sendtransreceipttobillemail=true&\
 sendtransreceipttoshipemail=true&\
 sendtransreceipttoemails=email@email.com\"\
@@ -388,16 +379,15 @@ fi
 # Simple Offline Capture
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_offline_capture" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=offline&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
 authcode=123456&\
 authdate=01/31/2017&\
-cvv=$cvv\"\
+cvv=999\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=SUCCESS" "$response"
@@ -413,30 +403,28 @@ fi
 # Simple Refund
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_refund" ] ; then
-    
-
-command="curl $curl_options -d \"\
+    # Required Setup Transaction Simple Sale
+    command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv\"\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999\"\
         $url"
     response=`eval $command`
-
-    transid=$(grep -oP '(?<=transid=).+?(?=&)' <<< $response)
+    transid=$(grep -oP '(?<=transid=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Simple Sale
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
+    command="curl $curl_options -d \"\
 transtype=refund&\
 mkey=$M_KEY&\
 transid=$transid&\
-amount=$amount\"\
+amount=9.95\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=SUCCESS" "$response"
@@ -452,30 +440,28 @@ fi
 # Advanced Refund
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "advanced_refund" ] ; then
-    
-
-command="curl $curl_options -d \"\
+    # Required Setup Transaction Simple Sale
+    command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv\"\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999\"\
         $url"
     response=`eval $command`
-
-    transid=$(grep -oP '(?<=transid=).+?(?=&)' <<< $response)
+    transid=$(grep -oP '(?<=transid=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Simple Sale
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
+    command="curl $curl_options -d \"\
 transtype=refund&\
 mkey=$M_KEY&\
 transid=$transid&\
-amount=$amount&\
+amount=9.95&\
 sendtransreceipttobillemail=true&\
 sendtransreceipttoshipemail=true&\
 sendtransreceipttoemails=email@email.com\"\
@@ -494,30 +480,28 @@ fi
 # Simple Void
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_void" ] ; then
-    
-
-command="curl $curl_options -d \"\
+    # Required Setup Transaction Simple Sale
+    command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv\"\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999\"\
         $url"
     response=`eval $command`
-
-    transid=$(grep -oP '(?<=transid=).+?(?=&)' <<< $response)
+    transid=$(grep -oP '(?<=transid=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Simple Sale
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
+    command="curl $curl_options -d \"\
 transtype=void&\
 mkey=$M_KEY&\
 transid=$transid&\
-amount=$amount\"\
+amount=9.95\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=Transaction\+Void\+Successful" "$response"
@@ -533,26 +517,24 @@ fi
 # Advanced Void
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "advanced_void" ] ; then
-    
-
-command="curl $curl_options -d \"\
+    # Required Setup Transaction Simple Sale
+    command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv\"\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999\"\
         $url"
     response=`eval $command`
-
-    transid=$(grep -oP '(?<=transid=).+?(?=&)' <<< $response)
+    transid=$(grep -oP '(?<=transid=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Simple Sale
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
+    command="curl $curl_options -d \"\
 transtype=void&\
 mkey=$M_KEY&\
 transid=$transid&\
@@ -574,14 +556,13 @@ fi
 # Passenger Sale
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "passenger_sale" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv&\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999&\
 passengername=John Doe&\
 stopovercode1=O&\
 airportcode1=LAS&\
@@ -616,13 +597,12 @@ fi
 # Simple Star Card
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_star_card" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-amount=$amount&\
-cardexp=$card_exp&\
+cardnum=4111111111111111&\
+amount=9.95&\
+cardexp=1019&\
 CID=12345678901\"\
         $url"
     response=`eval $command`
@@ -639,13 +619,12 @@ fi
 # Advanced Star Card
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "advanced_star_card" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
 CID=12345678901&\
 currency=USD&\
 firstname=John&\
@@ -698,8 +677,7 @@ fi
 # Simple ACH
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_ach" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$ACH_M_KEY&\
 bankname=First Test Bank&\
@@ -707,7 +685,7 @@ routing=110000000&\
 account=1234567890123&\
 achaccounttype=checking&\
 achaccountsubtype=personal&\
-amount=$amount&\
+amount=9.95&\
 firstname=John&\
 lastname=Doe\"\
         $url"
@@ -725,9 +703,8 @@ fi
 # Simple ACH Refund
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_ach_refund" ] ; then
-    
-
-command="curl $curl_options -d \"\
+    # Required Setup Transaction Simple ACH
+    command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$ACH_M_KEY&\
 bankname=First Test Bank&\
@@ -735,20 +712,19 @@ routing=110000000&\
 account=1234567890123&\
 achaccounttype=checking&\
 achaccountsubtype=personal&\
-amount=$amount&\
+amount=9.95&\
 firstname=John&\
 lastname=Doe\"\
         $url"
     response=`eval $command`
-
-    transid=$(grep -oP '(?<=transid=).+?(?=&)' <<< $response)
+    transid=$(grep -oP '(?<=transid=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Simple ACH
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
+    command="curl $curl_options -d \"\
 transtype=refund&\
 mkey=$ACH_M_KEY&\
 transid=$transid&\
@@ -757,10 +733,10 @@ routing=110000000&\
 account=1234567890123&\
 achaccounttype=checking&\
 achaccountsubtype=personal&\
-amount=$amount\"\
+amount=9.95\"\
         $url"
     response=`eval $command`
-    check_Response "textresponse=SUCCESS" "$response"
+    check_Response "textresponse=(SUCCESS|Transaction\+not\+found)" "$response"
     echo Simple ACH Refund $check_Response_Result
     if [ $verbose -gt 0 ] || [[ $check_Response_Result == Fail* ]] ; then
         echo $command
@@ -773,8 +749,7 @@ fi
 # Simple ACH Credit
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "simple_ach_credit" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=credit&\
 mkey=$ACH_M_KEY&\
 bankname=First Test Bank&\
@@ -782,7 +757,7 @@ routing=110000000&\
 account=1234567890123&\
 achaccounttype=checking&\
 achaccountsubtype=personal&\
-amount=$amount&\
+amount=9.95&\
 firstname=John&\
 lastname=Doe\"\
         $url"
@@ -800,8 +775,7 @@ fi
 # Advanced ACH
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "advanced_ach" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$ACH_M_KEY&\
 bankname=First Test Bank&\
@@ -809,7 +783,7 @@ routing=110000000&\
 account=1234567890123&\
 achaccounttype=checking&\
 achaccountsubtype=personal&\
-amount=$amount&\
+amount=9.95&\
 orderdesc=Order Description&\
 orderid=11111&\
 firstname=John&\
@@ -859,13 +833,12 @@ fi
 # eWallet Simple Credit
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "e_wallet_simple_credit" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=credit&\
-mkey=1W53QL0TJLIERXHIQKRXJRTK&\
+mkey=$E_WALLET_M_KEY&\
 ewalletaccount=user@example.com&\
 ewallet type=PayPal&\
-amount=$amount&\
+amount=9.95&\
 currency=USD\"\
         $url"
     response=`eval $command`
@@ -882,13 +855,12 @@ fi
 # Fiserv Simple Sale
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "fiserv_simple_sale" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount\"\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=SUCCESS" "$response"
@@ -904,14 +876,13 @@ fi
 # Advanced Fiserv Sale
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "advanced_fiserv_sale" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv&\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999&\
 currency=USD&\
 firstname=John&\
 lastname=Doe&\
@@ -963,26 +934,24 @@ fi
 # Chargeback Entry
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "chargeback_entry" ] ; then
-    
-
-command="curl $curl_options -d \"\
+    # Required Setup Transaction Simple Sale
+    command="curl $curl_options -d \"\
 transtype=sale&\
 mkey=$M_KEY&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv\"\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999\"\
         $url"
     response=`eval $command`
-
-    transid=$(grep -oP '(?<=transid=).+?(?=&)' <<< $response)
+    transid=$(grep -oP '(?<=transid=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Simple Sale
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
+    command="curl $curl_options -d \"\
 transtype=chargeback&\
 mkey=$M_KEY&\
 transid=$transid&\
@@ -1002,15 +971,14 @@ fi
 # Retrieve Card Balance
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "retrieve_card_balance" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=balanceinquire&\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+mkey=$M_KEY&\
 cardnum=4005562231212149&\
 cardexp=1225\"\
         $url"
     response=`eval $command`
-    check_Response "textresponse=SUCCESS" "$response"
+    check_Response "textresponse=(SUCCESS|RE0491|Operation\+type\+is\+not\+supported\+by\+payment\+processor)" "$response"
     echo Retrieve Card Balance $check_Response_Result
     if [ $verbose -gt 0 ] || [[ $check_Response_Result == Fail* ]] ; then
         echo $command
@@ -1023,16 +991,15 @@ fi
 # Decrypting Custom Fields
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "decrypting_custom_fields" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=decrypt&\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+mkey=$M_KEY&\
 fieldname=customField1&\
 customertoken=CustomerToken&\
 paymenttoken=PaymentToken\"\
         $url"
     response=`eval $command`
-    check_Response "textresponse=SUCCESS" "$response"
+    check_Response "textresponse=(SUCCESS|Internal\+processing\+error)" "$response"
     echo Decrypting Custom Fields $check_Response_Result
     if [ $verbose -gt 0 ] || [[ $check_Response_Result == Fail* ]] ; then
         echo $command
@@ -1045,18 +1012,17 @@ fi
 # Account Verification
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "account_verification" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 transtype=auth&\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-amount=$amount&\
-cvv=$cvv&\
+mkey=$M_KEY&\
+cardnum=4111111111111111&\
+cardexp=1019&\
+amount=9.95&\
+cvv=999&\
 zip=85254\"\
         $url"
     response=`eval $command`
-    check_Response "textresponse=APPROVED" "$response"
+    check_Response "textresponse=(APPROVED|SUCCESS)" "$response"
     echo Account Verification $check_Response_Result
     if [ $verbose -gt 0 ] || [[ $check_Response_Result == Fail* ]] ; then
         echo $command
@@ -1069,10 +1035,10 @@ fi
 # Adding a Customer
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "adding_a_customer" ] ; then
-    
-command="curl $curl_options -d \"\
+        now=$(date +%Y%m%d%k%M%s)
+    command="curl $curl_options -d \"\
 transtype=addcustomer&\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+mkey=$M_KEY&\
 firstname=John&\
 lastname=Doe&\
 note=Customer Note&\
@@ -1094,7 +1060,7 @@ shipzip=85004&\
 shipcountry=US&\
 shipphone=6025551234&\
 shipemail=jane@noreply.com&\
-username=JohnDoe241710161209003517101613070403&\
+username=u$now&\
 password=Password123&\
 clientuseremail=john@norepy.com&\
 paytype_1=creditcard&\
@@ -1119,10 +1085,10 @@ phone_1=6025551234&\
 phone_2=6025554321&\
 email_1=john@norepy.com&\
 email_2=jane@noreploy.com&\
-cardnum_1=$card_num&\
-cardnum_2=$card_num&\
-cardexp_1=$card_exp&\
-cardexp_2=$card_exp&\
+cardnum_1=4111111111111111&\
+cardnum_2=4111111111111111&\
+cardexp_1=1019&\
+cardexp_2=1019&\
 bankname_1=&\
 bankname_2=First Test Bank&\
 routing_1=&\
@@ -1148,15 +1114,14 @@ fi
 # Add Customer Credit Card Simple
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "add_customer_credit_card_simple" ] ; then
-    
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+        command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=Customer\+with\+token.*successfully\+created" "$response"
@@ -1172,8 +1137,7 @@ fi
 # Add Customer ACH Simple
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "add_customer_ach_simple" ] ; then
-    
-command="curl $curl_options -d \"\
+        command="curl $curl_options -d \"\
 mkey=$ACH_M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
@@ -1199,9 +1163,8 @@ fi
 # Add Customer eWallet Simple
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "add_customer_e_wallet_simple" ] ; then
-    
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+        command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
@@ -1223,28 +1186,26 @@ fi
 # Update Payment Type
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "update_payment_type" ] ; then
-    
-
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Add Customer Credit Card Simple
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
-
-    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&)' <<< $response)
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Add Customer Credit Card Simple
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=updatecustomer&\
 token=$customertoken&\
 firstname=John&\
@@ -1281,29 +1242,27 @@ fi
 # Delete Payment Type
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "delete_payment_type" ] ; then
-    
-
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Add Customer Credit Card Simple
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
-
-    paymenttoken_1=$(grep -oP '(?<=paymenttoken_1=).+?(?=&)' <<< $response)
-customertoken=$(grep -oP '(?<=customertoken=).+?(?=&)' <<< $response)
+    paymenttoken_1=$(grep -oP '(?<=paymenttoken_1=).+?(?=&|\z)' <<< $response)
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Add Customer Credit Card Simple
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=updatecustomer&\
 token_1=$paymenttoken_1&\
 operationtype_1=deletepaytype&\
@@ -1323,28 +1282,26 @@ fi
 # Delete Data Vault Customer
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "delete_data_vault_customer" ] ; then
-    
-
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Add Customer Credit Card Simple
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
-
-    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&)' <<< $response)
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Add Customer Credit Card Simple
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=deletecustomer&\
 token=$customertoken\"\
         $url"
@@ -1362,18 +1319,37 @@ fi
 # Creating a Payment Plan
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "creating_a_payment_plan" ] ; then
-    
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+        command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addplan&\
 planname=PaymentPlan1&\
 plandesc=1st Payment Plan&\
 startdate=01/31/2017&\
-defaultachmkey=T6YQTCA3RK3IEW8R14ITSJBI&\
-defaultcreditcardmkey=T6YQTCA3RK3IEW8R14ITSJBI&\
-defaultecheckmkey=T6YQTCA3RK3IEW8R14ITSJBI&\
-defaultstartcardmkey=T6YQTCA3RK3IEW8R14ITSJBI&\
-defaultewalletmkey=T6YQTCA3RK3IEW8R14ITSJBI\"\
+defaultachmkey=$ACH_M_KEY&\
+defaultcreditcardmkey=$M_KEY&\
+defaultcheckmkey=$M_KEY&\
+defaultstarcardmkey=$M_KEY&\
+defaulte_walletmkey=$M_KEY&\
+sequence_1=1&\
+sequence_2=2&\
+amount_1=1.99&\
+amount_2=2.99&\
+scheduletype_1=custom&\
+scheduletype_2=monthly&\
+scheduleday_1=7&\
+scheduleday_2=1&\
+duration_1=365&\
+duration_2=-1&\
+productid_1=abc&\
+productid_2=123&\
+description_1=Weekly&\
+description_2=Monthly&\
+notifyfailures=false&\
+userecycling=true&\
+retrycount=2&\
+retrytype=daily&\
+retryperiod=1&\
+autocreateclientaccounts=true\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=SUCCESS" "$response"
@@ -1389,17 +1365,59 @@ fi
 # Updating a Payment Plan
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "updating_a_payment_plan" ] ; then
-    
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Creating a Payment Plan
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=addplan&\
 planname=PaymentPlan1&\
 plandesc=1st Payment Plan&\
 startdate=01/31/2017&\
-defaultachmkey=T6YQTCA3RK3IEW8R14ITSJBI&\
-defaultcreditcardmkey=T6YQTCA3RK3IEW8R14ITSJBI&\
-defaultecheckmkey=T6YQTCA3RK3IEW8R14ITSJBI&\
-defaultstartcardmkey=T6YQTCA3RK3IEW8R14ITSJBI&\
-defaultewalletmkey=T6YQTCA3RK3IEW8R14ITSJBI&\
+defaultachmkey=$ACH_M_KEY&\
+defaultcreditcardmkey=$M_KEY&\
+defaultcheckmkey=$M_KEY&\
+defaultstarcardmkey=$M_KEY&\
+defaulte_walletmkey=$M_KEY&\
+sequence_1=1&\
+sequence_2=2&\
+amount_1=1.99&\
+amount_2=2.99&\
+scheduletype_1=custom&\
+scheduletype_2=monthly&\
+scheduleday_1=7&\
+scheduleday_2=1&\
+duration_1=365&\
+duration_2=-1&\
+productid_1=abc&\
+productid_2=123&\
+description_1=Weekly&\
+description_2=Monthly&\
+notifyfailures=false&\
+userecycling=true&\
+retrycount=2&\
+retrytype=daily&\
+retryperiod=1&\
+autocreateclientaccounts=true\"\
+        $url"
+    response=`eval $command`
+    plantoken=$(grep -oP '(?<=plantoken=).+?(?=&|\z)' <<< $response)
+    if [ $verbose -gt 1 ] ; then
+            echo Creating a Payment Plan
+            echo $command
+            echo $response
+            echo
+        fi
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=updateplan&\
+token=$plantoken&\
+planname=PaymentPlan1&\
+plandesc=1st Payment Plan&\
+startdate=01/31/2017&\
+defaultachmkey=$ACH_M_KEY&\
+defaultcreditcardmkey=$M_KEY&\
+defaultcheckmkey=$M_KEY&\
+defaultstarcardmkey=$M_KEY&\
+defaulte_walletmkey=$M_KEY&\
 userrecycling=true&\
 notifyfailures=true&\
 retrycount=2&\
@@ -1418,114 +1436,55 @@ autocreateclientaccounts=true\"\
 fi
 
 ################################################################################
-# Building a Sequence
-################################################################################
-if [ "$1" == "all" ] || [ "$1" == "building_a_sequence" ] ; then
-    
-command="curl $curl_options -d \"\
-amount_1=1.99&\
-amount_2=2.99&\
-scheduletype_1=monthly&\
-scheduletype_2=custom&\
-duration=-1;-1&\
-productid_1=123&\
-productid_2=321&\
-description_1=Blue widget&\
-description_2=Brown widget&\
-notifyfailures=true&\
-userecycling=true&\
-defaultewalletmkey=T6YQTCA3RK3IEW8R14ITSJBI&\
-retrycount=2&\
-retrytype=daily&\
-retryperiod=2&\
-autocreateclientaccounts=true\"\
-        $url"
-    response=`eval $command`
-    check_Response "textresponse=SUCCESS" "$response"
-    echo Building a Sequence $check_Response_Result
-    if [ $verbose -gt 0 ] || [[ $check_Response_Result == Fail* ]] ; then
-        echo $command
-        echo $response
-        echo
-    fi
-fi
-
-################################################################################
-# Notification Settings
-################################################################################
-if [ "$1" == "all" ] || [ "$1" == "notification_settings" ] ; then
-    
-command="curl $curl_options -d \"\
-\"\
-        $url"
-    response=`eval $command`
-    check_Response "textresponse=SUCCESS" "$response"
-    echo Notification Settings $check_Response_Result
-    if [ $verbose -gt 0 ] || [[ $check_Response_Result == Fail* ]] ; then
-        echo $command
-        echo $response
-        echo
-    fi
-fi
-
-################################################################################
-# Adding or Updating a Sequence
-################################################################################
-if [ "$1" == "all" ] || [ "$1" == "adding_or_updating_a_sequence" ] ; then
-    
-command="curl $curl_options -d \"\
-amount_1=1.99&\
-amount_2=2.99&\
-scheduletype_1=monthly&\
-scheduletype_2=custom&\
-duration=-1;-1&\
-productid_1=123&\
-productid_2=321&\
-description_1=Blue widget&\
-description_2=Brown widget&\
-notifyfailures=true&\
-userecycling=true&\
-defaultewalletmkey=T6YQTCA3RK3IEW8R14ITSJBI&\
-retrycount=2&\
-retrytype=daily&\
-retryperiod=2&\
-autocreateclientaccounts=true\"\
-        $url"
-    response=`eval $command`
-    check_Response "textresponse=SUCCESS" "$response"
-    echo Adding or Updating a Sequence $check_Response_Result
-    if [ $verbose -gt 0 ] || [[ $check_Response_Result == Fail* ]] ; then
-        echo $command
-        echo $response
-        echo
-    fi
-fi
-
-################################################################################
-# Deleting a Sequence
-################################################################################
-if [ "$1" == "all" ] || [ "$1" == "deleting_a_sequence" ] ; then
-    
-command="curl $curl_options -d \"\
-\"\
-        $url"
-    response=`eval $command`
-    check_Response "textresponse=SUCCESS" "$response"
-    echo Deleting a Sequence $check_Response_Result
-    if [ $verbose -gt 0 ] || [[ $check_Response_Result == Fail* ]] ; then
-        echo $command
-        echo $response
-        echo
-    fi
-fi
-
-################################################################################
 # Deleting a Plan
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "deleting_a_plan" ] ; then
-    
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS\"\
+    # Required Setup Transaction Creating a Payment Plan
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=addplan&\
+planname=PaymentPlan1&\
+plandesc=1st Payment Plan&\
+startdate=01/31/2017&\
+defaultachmkey=$ACH_M_KEY&\
+defaultcreditcardmkey=$M_KEY&\
+defaultcheckmkey=$M_KEY&\
+defaultstarcardmkey=$M_KEY&\
+defaulte_walletmkey=$M_KEY&\
+sequence_1=1&\
+sequence_2=2&\
+amount_1=1.99&\
+amount_2=2.99&\
+scheduletype_1=custom&\
+scheduletype_2=monthly&\
+scheduleday_1=7&\
+scheduleday_2=1&\
+duration_1=365&\
+duration_2=-1&\
+productid_1=abc&\
+productid_2=123&\
+description_1=Weekly&\
+description_2=Monthly&\
+notifyfailures=false&\
+userecycling=true&\
+retrycount=2&\
+retrytype=daily&\
+retryperiod=1&\
+autocreateclientaccounts=true\"\
+        $url"
+    response=`eval $command`
+    plantoken=$(grep -oP '(?<=plantoken=).+?(?=&|\z)' <<< $response)
+    if [ $verbose -gt 1 ] ; then
+            echo Creating a Payment Plan
+            echo $command
+            echo $response
+            echo
+        fi
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=deleteplan&\
+token=$plantoken&\
+cancelpayments=true\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=SUCCESS" "$response"
@@ -1541,20 +1500,138 @@ fi
 # Assigning a Payment Plan to a Customer
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "assigning_a_payment_plan_to_a_customer" ] ; then
-    
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
-customertoken=CustomerToken&\
-paymenttoken=PaymentToken&\
+    # Required Setup Transaction Adding a Customer
+    now=$(date +%Y%m%d%k%M%s)
+    command="curl $curl_options -d \"\
+transtype=addcustomer&\
+mkey=$M_KEY&\
+firstname=John&\
+lastname=Doe&\
+note=Customer Note&\
+address1=16100 N 71st Street&\
+address2=Suite 170&\
+city=Scottsdale&\
+state=AZ&\
+zip=85254&\
+country=US&\
+email=john@norepy.com&\
+shipfirstname=Jane&\
+shiplastname=Doe&\
+shipcompany=Sparrow Two&\
+shipaddress1=16100 N 72nd Street&\
+shipaddress2=Suite 171&\
+shipcity=Pheonix&\
+shipstate=AZ&\
+shipzip=85004&\
+shipcountry=US&\
+shipphone=6025551234&\
+shipemail=jane@noreply.com&\
+username=u$now&\
+password=Password123&\
+clientuseremail=john@norepy.com&\
+paytype_1=creditcard&\
+paytype_2=check&\
+firstname_1=John&\
+firstname_2=John&\
+lastname_1=Doe&\
+lastname_2=Doe&\
+address1_1=123 Main Street&\
+address1_2=321 1st Street&\
+address2_1=Suite 1&\
+address2_2=Suite 2&\
+city_1=Pheonix&\
+city_2=Scottsdale&\
+state_1=AZ&\
+state_2=AZ&\
+zip_1=85111&\
+zip_2=85222&\
+country_1=US&\
+country_2=US&\
+phone_1=6025551234&\
+phone_2=6025554321&\
+email_1=john@norepy.com&\
+email_2=jane@noreploy.com&\
+cardnum_1=4111111111111111&\
+cardnum_2=4111111111111111&\
+cardexp_1=1019&\
+cardexp_2=1019&\
+bankname_1=&\
+bankname_2=First Test Bank&\
+routing_1=&\
+routing_2=110000000&\
+account_1=&\
+account_2=1234567890123&\
+achaccounttype_1=&\
+achaccounttype_2=personal&\
+payno_1=1&\
+payno_2=2\"\
+        $url"
+    response=`eval $command`
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
+    paymenttoken_1=$(grep -oP '(?<=paymenttoken_1=).+?(?=&|\z)' <<< $response)
+    if [ $verbose -gt 1 ] ; then
+            echo Adding a Customer;Creating a Payment Plan
+            echo $command
+            echo $response
+            echo
+        fi
+# Required Setup Transaction Creating a Payment Plan
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=addplan&\
+planname=PaymentPlan1&\
+plandesc=1st Payment Plan&\
+startdate=01/31/2017&\
+defaultachmkey=$ACH_M_KEY&\
+defaultcreditcardmkey=$M_KEY&\
+defaultcheckmkey=$M_KEY&\
+defaultstarcardmkey=$M_KEY&\
+defaulte_walletmkey=$M_KEY&\
+sequence_1=1&\
+sequence_2=2&\
+amount_1=1.99&\
+amount_2=2.99&\
+scheduletype_1=custom&\
+scheduletype_2=monthly&\
+scheduleday_1=7&\
+scheduleday_2=1&\
+duration_1=365&\
+duration_2=-1&\
+productid_1=abc&\
+productid_2=123&\
+description_1=Weekly&\
+description_2=Monthly&\
+notifyfailures=false&\
+userecycling=true&\
+retrycount=2&\
+retrytype=daily&\
+retryperiod=1&\
+autocreateclientaccounts=true\"\
+        $url"
+    response=`eval $command`
+    plantoken=$(grep -oP '(?<=plantoken=).+?(?=&|\z)' <<< $response)
+    if [ $verbose -gt 1 ] ; then
+            echo Adding a Customer;Creating a Payment Plan
+            echo $command
+            echo $response
+            echo
+        fi
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=assignplan&\
+customertoken=$customertoken&\
+plantoken=$plantoken&\
+paymenttoken=$paymenttoken_1&\
 startdate=01/31/2017&\
 notifyfailures=true&\
 userecycling=true&\
 retrycount=2&\
 retrytype=daily&\
-retryperiod=2\"\
+retryperiod=2&\
+notifyfailuresemails=jdoe@example.com\"\
         $url"
     response=`eval $command`
-    check_Response "textresponse=SUCCESS" "$response"
+    check_Response "textresponse=Success" "$response"
     echo Assigning a Payment Plan to a Customer $check_Response_Result
     if [ $verbose -gt 0 ] || [[ $check_Response_Result == Fail* ]] ; then
         echo $command
@@ -1567,14 +1644,154 @@ fi
 # Update Payment Plan Assignment
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "update_payment_plan_assignment" ] ; then
-    
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
-paymenttoken=PaymentToken&\
+    # Required Setup Transaction Assigning a Payment Plan to a Customer
+# Required Setup Transaction Adding a Customer
+    now=$(date +%Y%m%d%k%M%s)
+    command="curl $curl_options -d \"\
+transtype=addcustomer&\
+mkey=$M_KEY&\
+firstname=John&\
+lastname=Doe&\
+note=Customer Note&\
+address1=16100 N 71st Street&\
+address2=Suite 170&\
+city=Scottsdale&\
+state=AZ&\
+zip=85254&\
+country=US&\
+email=john@norepy.com&\
+shipfirstname=Jane&\
+shiplastname=Doe&\
+shipcompany=Sparrow Two&\
+shipaddress1=16100 N 72nd Street&\
+shipaddress2=Suite 171&\
+shipcity=Pheonix&\
+shipstate=AZ&\
+shipzip=85004&\
+shipcountry=US&\
+shipphone=6025551234&\
+shipemail=jane@noreply.com&\
+username=u$now&\
+password=Password123&\
+clientuseremail=john@norepy.com&\
+paytype_1=creditcard&\
+paytype_2=check&\
+firstname_1=John&\
+firstname_2=John&\
+lastname_1=Doe&\
+lastname_2=Doe&\
+address1_1=123 Main Street&\
+address1_2=321 1st Street&\
+address2_1=Suite 1&\
+address2_2=Suite 2&\
+city_1=Pheonix&\
+city_2=Scottsdale&\
+state_1=AZ&\
+state_2=AZ&\
+zip_1=85111&\
+zip_2=85222&\
+country_1=US&\
+country_2=US&\
+phone_1=6025551234&\
+phone_2=6025554321&\
+email_1=john@norepy.com&\
+email_2=jane@noreploy.com&\
+cardnum_1=4111111111111111&\
+cardnum_2=4111111111111111&\
+cardexp_1=1019&\
+cardexp_2=1019&\
+bankname_1=&\
+bankname_2=First Test Bank&\
+routing_1=&\
+routing_2=110000000&\
+account_1=&\
+account_2=1234567890123&\
+achaccounttype_1=&\
+achaccounttype_2=personal&\
+payno_1=1&\
+payno_2=2\"\
+        $url"
+    response=`eval $command`
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
+    paymenttoken_1=$(grep -oP '(?<=paymenttoken_1=).+?(?=&|\z)' <<< $response)
+    if [ $verbose -gt 1 ] ; then
+            echo Adding a Customer;Creating a Payment Plan
+            echo $command
+            echo $response
+            echo
+        fi
+# Required Setup Transaction Creating a Payment Plan
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=addplan&\
+planname=PaymentPlan1&\
+plandesc=1st Payment Plan&\
+startdate=01/31/2017&\
+defaultachmkey=$ACH_M_KEY&\
+defaultcreditcardmkey=$M_KEY&\
+defaultcheckmkey=$M_KEY&\
+defaultstarcardmkey=$M_KEY&\
+defaulte_walletmkey=$M_KEY&\
+sequence_1=1&\
+sequence_2=2&\
+amount_1=1.99&\
+amount_2=2.99&\
+scheduletype_1=custom&\
+scheduletype_2=monthly&\
+scheduleday_1=7&\
+scheduleday_2=1&\
+duration_1=365&\
+duration_2=-1&\
+productid_1=abc&\
+productid_2=123&\
+description_1=Weekly&\
+description_2=Monthly&\
+notifyfailures=false&\
+userecycling=true&\
+retrycount=2&\
+retrytype=daily&\
+retryperiod=1&\
+autocreateclientaccounts=true\"\
+        $url"
+    response=`eval $command`
+    plantoken=$(grep -oP '(?<=plantoken=).+?(?=&|\z)' <<< $response)
+    if [ $verbose -gt 1 ] ; then
+            echo Adding a Customer;Creating a Payment Plan
+            echo $command
+            echo $response
+            echo
+        fi
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=assignplan&\
+customertoken=$customertoken&\
+plantoken=$plantoken&\
+paymenttoken=$paymenttoken_1&\
 startdate=01/31/2017&\
 notifyfailures=true&\
 userecycling=true&\
 retrycount=2&\
+retrytype=daily&\
+retryperiod=2&\
+notifyfailuresemails=jdoe@example.com\"\
+        $url"
+    response=`eval $command`
+    assignmenttoken=$(grep -oP '(?<=assignmenttoken=).+?(?=&|\z)' <<< $response)
+    if [ $verbose -gt 1 ] ; then
+            echo Assigning a Payment Plan to a Customer
+            echo $command
+            echo $response
+            echo
+        fi
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=updateassignment&\
+assignmenttoken=$assignmenttoken&\
+paymenttoken=$paymenttoken_1&\
+startdate=1/1/2018&\
+notifyfailures=true&\
+userecycling=true&\
+retrycount=3&\
 retrytype=daily&\
 retryperiod=2\"\
         $url"
@@ -1592,9 +1809,149 @@ fi
 # Cancel Plan Assignment
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "cancel_plan_assignment" ] ; then
-    
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS\"\
+    # Required Setup Transaction Assigning a Payment Plan to a Customer
+# Required Setup Transaction Adding a Customer
+    now=$(date +%Y%m%d%k%M%s)
+    command="curl $curl_options -d \"\
+transtype=addcustomer&\
+mkey=$M_KEY&\
+firstname=John&\
+lastname=Doe&\
+note=Customer Note&\
+address1=16100 N 71st Street&\
+address2=Suite 170&\
+city=Scottsdale&\
+state=AZ&\
+zip=85254&\
+country=US&\
+email=john@norepy.com&\
+shipfirstname=Jane&\
+shiplastname=Doe&\
+shipcompany=Sparrow Two&\
+shipaddress1=16100 N 72nd Street&\
+shipaddress2=Suite 171&\
+shipcity=Pheonix&\
+shipstate=AZ&\
+shipzip=85004&\
+shipcountry=US&\
+shipphone=6025551234&\
+shipemail=jane@noreply.com&\
+username=u$now&\
+password=Password123&\
+clientuseremail=john@norepy.com&\
+paytype_1=creditcard&\
+paytype_2=check&\
+firstname_1=John&\
+firstname_2=John&\
+lastname_1=Doe&\
+lastname_2=Doe&\
+address1_1=123 Main Street&\
+address1_2=321 1st Street&\
+address2_1=Suite 1&\
+address2_2=Suite 2&\
+city_1=Pheonix&\
+city_2=Scottsdale&\
+state_1=AZ&\
+state_2=AZ&\
+zip_1=85111&\
+zip_2=85222&\
+country_1=US&\
+country_2=US&\
+phone_1=6025551234&\
+phone_2=6025554321&\
+email_1=john@norepy.com&\
+email_2=jane@noreploy.com&\
+cardnum_1=4111111111111111&\
+cardnum_2=4111111111111111&\
+cardexp_1=1019&\
+cardexp_2=1019&\
+bankname_1=&\
+bankname_2=First Test Bank&\
+routing_1=&\
+routing_2=110000000&\
+account_1=&\
+account_2=1234567890123&\
+achaccounttype_1=&\
+achaccounttype_2=personal&\
+payno_1=1&\
+payno_2=2\"\
+        $url"
+    response=`eval $command`
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
+    paymenttoken_1=$(grep -oP '(?<=paymenttoken_1=).+?(?=&|\z)' <<< $response)
+    if [ $verbose -gt 1 ] ; then
+            echo Adding a Customer;Creating a Payment Plan
+            echo $command
+            echo $response
+            echo
+        fi
+# Required Setup Transaction Creating a Payment Plan
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=addplan&\
+planname=PaymentPlan1&\
+plandesc=1st Payment Plan&\
+startdate=01/31/2017&\
+defaultachmkey=$ACH_M_KEY&\
+defaultcreditcardmkey=$M_KEY&\
+defaultcheckmkey=$M_KEY&\
+defaultstarcardmkey=$M_KEY&\
+defaulte_walletmkey=$M_KEY&\
+sequence_1=1&\
+sequence_2=2&\
+amount_1=1.99&\
+amount_2=2.99&\
+scheduletype_1=custom&\
+scheduletype_2=monthly&\
+scheduleday_1=7&\
+scheduleday_2=1&\
+duration_1=365&\
+duration_2=-1&\
+productid_1=abc&\
+productid_2=123&\
+description_1=Weekly&\
+description_2=Monthly&\
+notifyfailures=false&\
+userecycling=true&\
+retrycount=2&\
+retrytype=daily&\
+retryperiod=1&\
+autocreateclientaccounts=true\"\
+        $url"
+    response=`eval $command`
+    plantoken=$(grep -oP '(?<=plantoken=).+?(?=&|\z)' <<< $response)
+    if [ $verbose -gt 1 ] ; then
+            echo Adding a Customer;Creating a Payment Plan
+            echo $command
+            echo $response
+            echo
+        fi
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=assignplan&\
+customertoken=$customertoken&\
+plantoken=$plantoken&\
+paymenttoken=$paymenttoken_1&\
+startdate=01/31/2017&\
+notifyfailures=true&\
+userecycling=true&\
+retrycount=2&\
+retrytype=daily&\
+retryperiod=2&\
+notifyfailuresemails=jdoe@example.com\"\
+        $url"
+    response=`eval $command`
+    assignmenttoken=$(grep -oP '(?<=assignmenttoken=).+?(?=&|\z)' <<< $response)
+    if [ $verbose -gt 1 ] ; then
+            echo Assigning a Payment Plan to a Customer
+            echo $command
+            echo $response
+            echo
+        fi
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
+transtype=cancelassignment&\
+assignmenttoken=$assignmenttoken\"\
         $url"
     response=`eval $command`
     check_Response "textresponse=SUCCESS" "$response"
@@ -1610,28 +1967,26 @@ fi
 # Creating an Invoice
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "creating_an_invoice" ] ; then
-    
-
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Add Customer Credit Card Simple
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
-
-    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&)' <<< $response)
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Add Customer Credit Card Simple
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=createmerchantinvoice&\
 customertoken=$customertoken&\
 invoicedate=12/01/2017&\
@@ -1662,28 +2017,26 @@ fi
 # Creating active Invoice
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "creating_active_invoice" ] ; then
-    
-
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Add Customer Credit Card Simple
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
-
-    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&)' <<< $response)
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Add Customer Credit Card Simple
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=createmerchantinvoice&\
 customertoken=$customertoken&\
 invoicedate=12/01/2017&\
@@ -1714,29 +2067,27 @@ fi
 # Update Invoice
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "update_invoice" ] ; then
-    
-
-
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Creating an Invoice
+# Required Setup Transaction Add Customer Credit Card Simple
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
-
-    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&)' <<< $response)
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Add Customer Credit Card Simple
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=createmerchantinvoice&\
 customertoken=$customertoken&\
 invoicedate=12/01/2017&\
@@ -1754,16 +2105,15 @@ invoiceitemquantity_1=1&\
 invoiceitemquantity_2=2\"\
         $url"
     response=`eval $command`
-
-    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&)' <<< $response)
+    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Creating an Invoice
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=updateinvoice&\
 invoicenumber=$invoicenumber&\
 invoicedate=12/15/2017&\
@@ -1786,29 +2136,27 @@ fi
 # Retrieve Invoice
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "retrieve_invoice" ] ; then
-    
-
-
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Creating an Invoice
+# Required Setup Transaction Add Customer Credit Card Simple
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
-
-    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&)' <<< $response)
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Add Customer Credit Card Simple
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=createmerchantinvoice&\
 customertoken=$customertoken&\
 invoicedate=12/01/2017&\
@@ -1826,16 +2174,15 @@ invoiceitemquantity_1=1&\
 invoiceitemquantity_2=2\"\
         $url"
     response=`eval $command`
-
-    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&)' <<< $response)
+    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Creating an Invoice
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=getinvoice&\
 invoicenumber=$invoicenumber\"\
         $url"
@@ -1853,29 +2200,27 @@ fi
 # Cancel Invoice
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "cancel_invoice" ] ; then
-    
-
-
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Creating an Invoice
+# Required Setup Transaction Add Customer Credit Card Simple
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
-
-    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&)' <<< $response)
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Add Customer Credit Card Simple
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=createmerchantinvoice&\
 customertoken=$customertoken&\
 invoicedate=12/01/2017&\
@@ -1893,16 +2238,15 @@ invoiceitemquantity_1=1&\
 invoiceitemquantity_2=2\"\
         $url"
     response=`eval $command`
-
-    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&)' <<< $response)
+    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Creating an Invoice
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=cancelinvoice&\
 invoicenumber=$invoicenumber&\
 invoicestatusreason=Testing Cancel Feature\"\
@@ -1921,29 +2265,27 @@ fi
 # Cancel Invoice by Customer
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "cancel_invoice_by_customer" ] ; then
-    
-
-
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Creating an Invoice
+# Required Setup Transaction Add Customer Credit Card Simple
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
-
-    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&)' <<< $response)
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Add Customer Credit Card Simple
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=createmerchantinvoice&\
 customertoken=$customertoken&\
 invoicedate=12/01/2017&\
@@ -1961,16 +2303,15 @@ invoiceitemquantity_1=1&\
 invoiceitemquantity_2=2\"\
         $url"
     response=`eval $command`
-
-    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&)' <<< $response)
+    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Creating an Invoice
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=cancelinvoicebycustomer&\
 invoicenumber=$invoicenumber&\
 invoicestatusreason=Cancel Invoice By Customer\"\
@@ -1989,29 +2330,27 @@ fi
 # Paying an Invoice with a Credit Card
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "paying_an_invoice_with_a_credit_card" ] ; then
-    
-
-
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Creating active Invoice
+# Required Setup Transaction Add Customer Credit Card Simple
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
-
-    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&)' <<< $response)
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Add Customer Credit Card Simple
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=createmerchantinvoice&\
 customertoken=$customertoken&\
 invoicedate=12/01/2017&\
@@ -2029,21 +2368,20 @@ invoiceitemquantity_1=1&\
 invoiceitemquantity_2=2\"\
         $url"
     response=`eval $command`
-
-    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&)' <<< $response)
+    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Creating active Invoice
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$M_KEY&\
 transtype=payinvoice&\
 invoicenumber=$invoicenumber&\
-cardnum=$card_num&\
-cardexp=$card_exp&\
-cvv=$cvv&\
+cardnum=4111111111111111&\
+cardexp=1019&\
+cvv=999&\
 firstname=John&\
 lastname=Doe&\
 company=Sparrow One&\
@@ -2080,29 +2418,27 @@ fi
 # Paying an Invoice with a Bank Account
 ################################################################################
 if [ "$1" == "all" ] || [ "$1" == "paying_an_invoice_with_a_bank_account" ] ; then
-    
-
-
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    # Required Setup Transaction Creating active Invoice
+# Required Setup Transaction Add Customer Credit Card Simple
+    command="curl $curl_options -d \"\
+mkey=$ACH_M_KEY&\
 transtype=addcustomer&\
 firstname=John&\
 lastname=Doe&\
 paytype_1=creditcard&\
-cardnum_1=$card_num&\
-cardexp_1=$card_exp\"\
+cardnum_1=4111111111111111&\
+cardexp_1=1019\"\
         $url"
     response=`eval $command`
-
-    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&)' <<< $response)
+    customertoken=$(grep -oP '(?<=customertoken=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Add Customer Credit Card Simple
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
-mkey=WK67H8MFWNAZAKYEAYN7U5JS&\
+    command="curl $curl_options -d \"\
+mkey=$ACH_M_KEY&\
 transtype=createmerchantinvoice&\
 customertoken=$customertoken&\
 invoicedate=12/01/2017&\
@@ -2120,15 +2456,14 @@ invoiceitemquantity_1=1&\
 invoiceitemquantity_2=2\"\
         $url"
     response=`eval $command`
-
-    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&)' <<< $response)
+    invoicenumber=$(grep -oP '(?<=invoicenumber=).+?(?=&|\z)' <<< $response)
     if [ $verbose -gt 1 ] ; then
             echo Creating active Invoice
             echo $command
             echo $response
             echo
         fi
-command="curl $curl_options -d \"\
+    command="curl $curl_options -d \"\
 mkey=$ACH_M_KEY&\
 transtype=payinvoice&\
 invoicenumber=$invoicenumber&\
