@@ -1,0 +1,51 @@
+Simple Sale Pass
+Simple Sale Decline Pass
+Simple Sale Invalid Card Pass
+Simple Sale AVS mismatch Pass
+Advanced Sale Pass
+Simple Authorization Pass
+Advanced Auth Pass
+Simple Capture Pass
+Simple Offline Capture Pass
+Simple Refund Pass
+Advanced Refund Pass
+Simple Void Pass
+Advanced Void Pass
+Passenger Sale Pass
+Simple Star Card Pass
+Advanced Star Card Pass
+Simple ACH Pass
+Simple ACH Refund Pass
+Simple ACH Credit Pass
+Advanced ACH Pass
+eWallet Simple Credit Pass
+Fiserv Simple Sale Pass
+Advanced Fiserv Sale Pass
+Chargeback Entry Pass
+Retrieve Card Balance Pass
+Decrypting Custom Fields Pass
+Account Verification Pass
+Adding a Customer Pass
+Add Customer Credit Card Simple Pass
+Add Customer ACH Simple Pass
+Add Customer eWallet Simple Pass
+Update Payment Type Pass
+Delete Payment Type Pass
+Delete Data Vault Customer Pass
+Creating a Payment Plan Pass
+Updating a Payment Plan Pass
+Deleting a Plan Pass
+Assigning a Payment Plan to a Customer Pass
+Update Payment Plan Assignment Pass
+Cancel Plan Assignment Pass
+Creating an Invoice Pass
+Creating active Invoice Pass
+Update Invoice Pass
+Retrieve Invoice Pass
+Cancel Invoice Pass
+Cancel Invoice by Customer Pass
+Paying an Invoice with a Credit Card Pass
+Paying an Invoice with a Bank Account Pass
+48 tests.
+48 passing.
+0 failing.
