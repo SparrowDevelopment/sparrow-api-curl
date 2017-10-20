@@ -1,7 +1,6 @@
-
 #!/bin/bash
 
-#http://foresight.sparrowone.com/#!/documenter-creating-a-sale
+./config
 
 curl_options=""
 verbose=0
@@ -27,8 +26,8 @@ if [ -z $E_WALLET_M_KEY ]; then
     echo export E_WALLET_M_KEY=MyKeyValue
 fi
 
-if [ -z $1 ]; then
-    echo "usage ./sparrow-tests-curl [options...] <test_case_name>"
+if [ -z $1 ] || [ "$1" == "help" ] ; then
+    echo "usage ./api [options...] <test_case_name>"
     echo -v show request and response
     echo -vv show setup request and response
     echo "-c <curl options>"

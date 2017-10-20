@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export M_KEY=
+export ACH_M_KEY=
+export E_WALLET_M_KEY=
